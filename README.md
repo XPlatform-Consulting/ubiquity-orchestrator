@@ -18,7 +18,9 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+./submit_to_workflow.rb --host-address [host_address] --username [username] --password [username] --workflow-id [workflow_id] --additional-arguments [additional_arguments]
+
+./submit_to_workflow.rb --host-address 0.0.0.0 --request-path-prefix '' --username [username] --password [username] --workflow-id [workflow_id] --additional-arguments '{"SourceFilePath":"/Volumes/AFSN/_Ubiquity_MacOSX_Services/test_files/Ubiquity-2Ch-Mono_ProRes422-480p30.mov"}'
 
 ## Contributing
 
