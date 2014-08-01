@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'json'
 require 'logger'
+require 'net/http'
 require 'optparse'
 require 'pp'
 
@@ -179,7 +180,8 @@ module Ubiquity
       def initialize(args = {})
         @logger = args[:logger] ? args[:logger].dup : Logger.new(args[:log_to] || STDOUT)
         logger.level = args[:log_level] if args[:log_level]
-
+        @request_path_prefix = args[:request_path_prefix] || 'aspera/orchestrator/'
+        @request_path = args[:request_path] || File.join(@request_path_prefix, 'work_orders/initiate/xml')
         @parse_response = args[:parse_response]
 
         initialize_http_handler(args)
@@ -193,6 +195,7 @@ module Ubiquity
       end # connect
 
       def work_order_initiate(workflow_id, external_parameters = { }, options = { })
+        request_path = options[:request_path] || @request_path
         query = options[:query] || { }
         query[:login] ||= options[:username] || 'admin'
         query[:password] ||= options[:password] || 'password'
@@ -202,7 +205,7 @@ module Ubiquity
           query["external_parameters[#{k}]"] = v
         end
 
-        http.post('aspera/orchestrator/work_orders/initiate/xml', query)
+        http.post(request_path, query)
 
       end
 
@@ -238,6 +241,7 @@ op.on('--host-address ADDRESS', 'The server address of the Orchestrator server.'
 op.on('--host-port PORT', 'The port to use when communicating with the Orchestrator server.') { |v| options[:host_port] = v }
 op.on('--username USERNAME', 'The username to use when communicating with the Orchestrator server.') { |v| options[:username] = v }
 op.on('--password PASSWORD', 'The password to use when communicating with the Orchestrator server.') { |v| options[:password] = v }
+op.on('--request-path-prefix PREFIX', 'The request path prefix.', '\tdefault: "aspera/orchestrator"') { |v| options[:request_path_prefix] = v }
 op.on('--workflow-id ID', 'The id of the workflow to run.') { |v| options[:workflow_id] = v }
 op.on('--additional-arguments JSON', 'A JSON Hash of arguments to submit as arguments to the workflow.') { |v| options[:additional_arguments] = v }
 op.on('--help', 'Display this message.') { puts op; exit; }
