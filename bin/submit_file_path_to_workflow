@@ -231,7 +231,9 @@ def submit_file_path_to_workflow(file_path, args = { })
   initialize_work_order(workflow_id, external_parameters, args)
 end
 
-@options = { }
+@options = {
+  :options_file_path => "~/.options/#{File.basename($0, '.*')}",
+}
 def options; @options end
 
 op = OptionParser.new
@@ -243,12 +245,15 @@ op.on('--request-path-prefix PREFIX', 'The request path prefix.', '\tdefault: "a
 op.on('--workflow-id ID', 'The id of the workflow to run.') { |v| options[:workflow_id] = v }
 op.on('--file-path-parameter-name NAME', 'The name of the parameter to submit the file path to.') { |v| options[:file_path_parameter_name] = v }
 op.on('--additional-arguments JSON', 'A JSON Hash of arguments to submit as arguments to the workflow.') { |v| options[:additional_arguments] = v }
+op.on('--[no-]options-file [FILENAME]', 'Path to a file which contains default command line arguments.', "\tdefault: #{options[:options_file_path]}" ) { |v| options[:options_file_path] = v}
 op.on('--help', 'Display this message.') { puts op; exit; }
 
 initial_arguments = ARGV.dup
 remaining_arguments = initial_arguments.dup
 op.parse!(remaining_arguments)
-op.parse!(initial_arguments.dup) if op.load
+
+options_file_path = options[:options_file_path]
+op.parse!(initial_arguments.dup) if options_file_path and op.load(options_file_path)
 
 args = {
   :log_request_body => true,

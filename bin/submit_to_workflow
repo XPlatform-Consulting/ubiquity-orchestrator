@@ -1338,6 +1338,7 @@ end
   :username => 'admin',
   :password => 'password',
   :poll_status_interval => 15,
+  :options_file_path => "~/.options/#{File.basename($0, '.*')}",
 }
 def options; @options end
 
@@ -1353,12 +1354,15 @@ op.on('--[no-]wait', 'Will wait until the work order is completed.', %(\tdefault
 op.on('--poll-status-interval SECONDS', Integer, 'The interval to poll the status if wait is specified.') { |v| options[:poll_status_interval] = v }
 op.on('--work-order-id ID', 'The ID of an existing work order.') { |v| options[:work_order_id] = v }
 op.on('--[no-]get-work-order-output', 'Determines if the work order output variables are returned.') { |v| options[:get_work_order_output] = v }
+op.on('--[no-]options-file [FILENAME]', 'Path to a file which contains default command line arguments.', "\tdefault: #{options[:options_file_path]}" ) { |v| options[:options_file_path] = v}
 op.on('--help', 'Display this message.') { puts op; exit; }
 
 initial_arguments = ARGV.dup
 remaining_arguments = initial_arguments.dup
 op.parse!(remaining_arguments)
-op.parse!(initial_arguments.dup) if op.load
+
+options_file_path = options[:options_file_path]
+op.parse!(initial_arguments.dup) if options_file_path and op.load(options_file_path)
 
 args = {
   :log_request_body => true,
