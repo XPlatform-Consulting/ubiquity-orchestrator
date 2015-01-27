@@ -1358,6 +1358,7 @@ op.on('--help', 'Display this message.') { puts op; exit; }
 initial_arguments = ARGV.dup
 remaining_arguments = initial_arguments.dup
 op.parse!(remaining_arguments)
+op.parse!(initial_arguments.dup) if op.load
 
 args = {
   :log_request_body => true,
