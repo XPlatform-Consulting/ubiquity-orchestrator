@@ -1407,7 +1407,7 @@ loop do
   status = work_order['status'] || { }
   state = status['state']
 
-  warn "Status: #{status}"
+  warn "Status: #{status.inspect}"
   break if %w( Complete Error Failed ).include?(state)
   sleep poll_status_interval
 end if wait and work_order_id
