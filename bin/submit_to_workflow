@@ -1362,6 +1362,7 @@ remaining_arguments = initial_arguments.dup
 op.parse!(remaining_arguments)
 
 options_file_path = options[:options_file_path]
+options_file_path = File.expand_path(options_file_path) if options_file_path
 op.parse!(initial_arguments.dup) if options_file_path and op.load(options_file_path)
 
 args = {
